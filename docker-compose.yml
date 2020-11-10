@@ -1,0 +1,43 @@
+version: '3.1'
+
+services: 
+    db:
+        image: mongo
+        restart: always
+        environment: 
+            MONGO_INITDB_ROOT_USERNAME: admin
+            MONGO_INITDB_ROOT_PASSWORD: pass
+        volumes: 
+            - ./db:/data/db
+        ports:
+            - 27017:27017
+
+    mongo-express:
+        image: mongo-express
+        restart: always
+        ports:
+            - 8081:8081
+        environment:
+            ME_CONFIG_MONGODB_SERVER: db
+            ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+            ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+
+    app:
+        image: node:14-alpine
+        working_dir: /var/app
+        restart: always
+        ports: 
+            - 3001:3001
+        volumes: 
+            - ./server:/var/app
+        command: npm start
+
+    client:
+        image: node:14-alpine
+        working_dir: /var/app
+        restart: always
+        ports:
+            - 3000:3000
+        volumes: 
+            - ./client:/var/app
+        command: npm start
